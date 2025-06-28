@@ -7,6 +7,3 @@ joblib==1.4.2
 matplotlib==3.9.3
 matplotlib-inline==0.1.7
 tensorflow==2.18.0
-tensorflow-estimator==2.15.0
-tensorflow-io-gcs-filesystem==0.31.0
-tensorflow_intel==2.18.0

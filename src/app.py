@@ -3,6 +3,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import joblib
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Title
 st.title("Carbon Emission Forecasting App")
@@ -10,7 +13,8 @@ st.title("Carbon Emission Forecasting App")
 # Load data
 @st.cache_data
 def load_data():
-    df = pd.read_csv("data/emissions.csv")
+    DATA_PATH = os.path.join(BASE_DIR, 'data', 'emissions.csv')
+    df = pd.read_csv(DATA_PATH)
     return df
 
 df = load_data()
@@ -28,14 +32,18 @@ selected_model = st.sidebar.selectbox("Select Model", model_options)
 # Filter data
 df_filtered = df[(df['city'] == selected_city) & (df['sector'] == selected_sector)]
 
+
 # Load scaler
-scaler = joblib.load("scaler.pkl")
+SCALER_PATH = os.path.join(BASE_DIR, 'model', 'scaler.pkl')
+scaler = joblib.load(SCALER_PATH)
 
 # Load model
+GRU_PATH = os.path.join(BASE_DIR, 'model', 'gru_model.sav')
+LSTM_PATH = os.path.join(BASE_DIR, 'model', 'lstm_model.sav')
 if selected_model == 'GRU':
-    model = joblib.load("gru_model.sav")
+    model = joblib.load(GRU_PATH)
 else:
-    model = joblib.load("lstm_model.sav")
+    model = joblib.load(LSTM_PATH)
 
 # Preprocess: ambil value, scale, dan reshape untuk prediksi
 values = df_filtered['value'].values.reshape(-1, 1)
