@@ -224,6 +224,9 @@ mae = mean_absolute_error(actual, pred_inverse)
 mse = mean_squared_error(actual, pred_inverse)
 rmse = math.sqrt(mse)
 
+nonzero_mask = actual != 0
+mape = np.mean(np.abs((actual[nonzero_mask] - pred_inverse[nonzero_mask]) / actual[nonzero_mask])) * 100
+
 # Panel evaluasi
 st.subheader("🔎 Model Evaluation")
 
@@ -237,5 +240,7 @@ else:
 
 st.markdown(f"""
 - **MAE (Mean Absolute Error):** {mae:.4f}  
+- **MSE (Mean Squared Error):** {mse:.4f}  
 - **RMSE (Root Mean Squared Error):** {rmse:.4f}  
+- **MAPE (Mean Absolute Percentage Error):** {mape:.2f}%  
 """)
