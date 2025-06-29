@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
 
 COPY requirements.txt ./
 COPY src/ ./src/
-COPY model/ ./model/
+COPY models/ ./models/
 COPY data/ ./data/
 
 RUN pip3 install -r requirements.txt

@@ -25,12 +25,11 @@ df = load_data()
 df['date'] = pd.to_datetime(df['date'], format="%d/%m/%Y")
 
 # Sidebar
-st.sidebar.header("User Input")
-city_options = df['city'].unique()
+st.sidebar.header("⚙️ Forecast Configuration")
 sector_options = df['sector'].unique()
 model_options = ['GRU', 'LSTM']
 
-selected_city = st.sidebar.selectbox("Select City", city_options)
+selected_city = "Melbourne"
 selected_sector = st.sidebar.selectbox("Select Sector", sector_options)
 selected_model = st.sidebar.selectbox("Select Model", model_options)
 
@@ -38,23 +37,23 @@ selected_model = st.sidebar.selectbox("Select Model", model_options)
 df_filtered = df[(df['city'] == selected_city) & (df['sector'] == selected_sector)]
 
 # Load scaler & Model
-SCALER_PATH = os.path.join(BASE_DIR, 'model', 'scaler.pkl')
-GRU_PATH = os.path.join(BASE_DIR, 'model', 'gru_model.h5')
-LSTM_PATH = os.path.join(BASE_DIR, 'model', 'lstm_model.h5')
+SCALER_PATH = os.path.join(BASE_DIR, 'models', f'scaler_{selected_sector}.pkl').lower()
+MODEL_PATH = os.path.join(BASE_DIR, 'models', f'{selected_model}_{selected_sector}.h5').lower()
+
+if not os.path.exists(SCALER_PATH) or not os.path.exists(MODEL_PATH):
+    st.error("❌ Model atau Scaler tidak ditemukan untuk kombinasi yang dipilih.")
+    st.stop()
 
 @st.cache_resource
-def load_scaler():
-    return joblib.load(SCALER_PATH)
+def load_scaler(path):
+    return joblib.load(path)
 
 @st.cache_resource
-def load_selected_model(model_name):
-    if model_name == 'GRU':
-        return load_model(GRU_PATH, compile=False)
-    else:
-        return load_model(LSTM_PATH, compile=False)
+def load_selected_model(path):
+    return load_model(path, compile=False)
 
-scaler = load_scaler()
-model = load_selected_model(selected_model)
+scaler = load_scaler(SCALER_PATH)
+model = load_selected_model(MODEL_PATH)
 
 # Preprocess: ambil value, scale, dan reshape untuk prediksi
 values = df_filtered['value'].values.reshape(-1, 1)
@@ -226,7 +225,7 @@ mse = mean_squared_error(actual, pred_inverse)
 rmse = math.sqrt(mse)
 
 # Panel evaluasi
-st.subheader("Model Evaluation")
+st.subheader("🔎 Model Evaluation")
 
 # Interpretasi sederhana
 if rmse < 0.05:
